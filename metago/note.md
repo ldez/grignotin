@@ -7,4 +7,4 @@ Vanity imports:
   
     repoRoot, err := vcs.RepoRootForImportDynamic("pkname", false)
     ```
-- `go1.14/src/cmd/go/internal/get`
+- https://github.com/golang/go/tree/master/src/cmd/go/internal/get
