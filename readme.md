@@ -49,3 +49,46 @@ func main() {
 	fmt.Println(meta)
 }
 ```
+
+## Version
+
+Gets information about releases and build. 
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/version"
+)
+
+func main() {
+    includeAll := false
+	releases, err := version.GetReleases(includeAll)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(releases)
+}
+```
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/version"
+)
+
+func main() {
+	build, err := version.GetBuild()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(build)
+}
+```
