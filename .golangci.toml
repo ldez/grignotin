@@ -31,6 +31,8 @@
     "gomnd",
     "bodyclose", # Too many false-positive and panics.
     "wsl", # Too strict
+    "goerr113",
+    "testpackage",
   ]
 
 [issues]

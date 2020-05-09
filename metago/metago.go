@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// MetaGo information from the meta tags
+// MetaGo information from the meta tags.
 type MetaGo struct {
 	Pkg      string
 	GoSource []string
