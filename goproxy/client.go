@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -73,6 +74,48 @@ func (c *Client) Lookup(moduleName, version string) (string, error) {
 	}
 
 	return string(raw), nil
+}
+
+// GetSources gets the contents of the archive file.
+func (c *Client) GetSources(moduleName string, version string) ([]byte, error) {
+	uri := fmt.Sprintf("%s/%s/@v/%s.zip", c.proxyURL, safeModuleName(moduleName), version)
+
+	resp, err := c.HTTPClient.Get(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode/100 != 2 {
+		raw, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("invalid response: %s [%d]: %s", resp.Status, resp.StatusCode, string(raw))
+	}
+
+	raw, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return raw, nil
+}
+
+// DownloadSources returns an io.ReadCloser that reads the contents of the archive file.
+// It is the caller's responsibility to close the ReadCloser.
+func (c *Client) DownloadSources(moduleName string, version string) (io.ReadCloser, error) {
+	uri := fmt.Sprintf("%s/%s/@v/%s.zip", c.proxyURL, safeModuleName(moduleName), version)
+
+	resp, err := c.HTTPClient.Get(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode/100 != 2 {
+		raw, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("invalid response: %s [%d]: %s", resp.Status, resp.StatusCode, string(raw))
+	}
+
+	return resp.Body, nil
 }
 
 // GetVersions gets all available module versions.

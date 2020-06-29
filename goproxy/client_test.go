@@ -2,6 +2,7 @@ package goproxy
 
 import (
 	"fmt"
+	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,34 @@ func TestClient_Lookup(t *testing.T) {
 	}
 
 	fmt.Println(raw)
+}
+
+func TestClient_GetSources(t *testing.T) {
+	client := NewClient("", "")
+
+	raw, err := client.GetSources("github.com/ldez/grignotin", "v0.1.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(string(raw))
+}
+
+func TestClient_DownloadSources(t *testing.T) {
+	client := NewClient("", "")
+
+	reader, err := client.DownloadSources("github.com/ldez/grignotin", "v0.1.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = reader.Close() }()
+
+	raw, err := ioutil.ReadAll(reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(string(raw))
 }
 
 func TestClient_GetVersions(t *testing.T) {
