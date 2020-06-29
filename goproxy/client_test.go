@@ -7,8 +7,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetVersions(t *testing.T) {
-	client := NewClient("")
+func TestClient_Lookup(t *testing.T) {
+	client := NewClient("", "")
+
+	raw, err := client.Lookup("github.com/ldez/grignotin", "v0.1.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(raw)
+}
+
+func TestClient_GetVersions(t *testing.T) {
+	client := NewClient("", "")
 
 	versions, err := client.GetVersions("github.com/hashicorp/consul/api")
 	if err != nil {
@@ -18,8 +29,8 @@ func TestGetVersions(t *testing.T) {
 	fmt.Println(versions)
 }
 
-func TestGetInfo(t *testing.T) {
-	client := NewClient("")
+func TestClient_GetInfo(t *testing.T) {
+	client := NewClient("", "")
 
 	info, err := client.GetInfo("github.com/ijc25/Gotty", "a8b993ba6abdb0e0c12b0125c603323a71c7790c")
 	if err != nil {
@@ -29,8 +40,8 @@ func TestGetInfo(t *testing.T) {
 	fmt.Println(info)
 }
 
-func TestGetLatest(t *testing.T) {
-	client := NewClient("")
+func TestClient_GetLatest(t *testing.T) {
+	client := NewClient("", "")
 
 	info, err := client.GetLatest("golang.org/x/lint")
 	if err != nil {

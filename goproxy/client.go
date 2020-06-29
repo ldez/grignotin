@@ -1,17 +1,22 @@
 // Package goproxy simple client for go modules proxy
 // https://docs.gomods.io/intro/protocol/
+// https://go.googlesource.com/proposal/+/master/design/25530-sumdb.md
 package goproxy
 
 import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 	"unicode"
 )
 
-const defaultProxyURL = "https://proxy.golang.org"
+const (
+	defaultProxyURL            = "https://proxy.golang.org"
+	defaultChecksumDatabaseURL = "https://sum.golang.org"
+)
 
 // VersionInfo is the representation of a version.
 type VersionInfo struct {
@@ -24,11 +29,12 @@ type VersionInfo struct {
 // Client is the go modules proxy client.
 type Client struct {
 	proxyURL   string
+	sumDBURL   string
 	HTTPClient *http.Client
 }
 
 // NewClient creates a new Client.
-func NewClient(proxyURL string) *Client {
+func NewClient(proxyURL string, sumDBURL string) *Client {
 	client := &Client{
 		HTTPClient: &http.Client{},
 	}
@@ -38,7 +44,35 @@ func NewClient(proxyURL string) *Client {
 		client.proxyURL = proxyURL
 	}
 
+	client.sumDBURL = defaultChecksumDatabaseURL
+	if sumDBURL != "" {
+		client.sumDBURL = sumDBURL
+	}
+
 	return client
+}
+
+// Lookup gets checksum information.
+//	<sumDB URL>/lookup/<module name>@<version>
+func (c *Client) Lookup(moduleName, version string) (string, error) {
+	uri := fmt.Sprintf("%s/lookup/%s@%s", c.sumDBURL, safeModuleName(moduleName), version)
+	resp, err := c.HTTPClient.Get(uri)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	raw, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if resp.StatusCode/100 != 2 {
+		return "", fmt.Errorf("invalid response: %s [%d]: %s", resp.Status, resp.StatusCode, string(raw))
+	}
+
+	return string(raw), nil
 }
 
 // GetVersions gets all available module versions.
