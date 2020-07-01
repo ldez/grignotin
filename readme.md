@@ -96,3 +96,7 @@ func main() {
 	fmt.Println(build)
 }
 ```
+
+## SumDB
+
+- I recommend to use the package [sumdb](https://pkg.go.dev/golang.org/x/mod/sumdb?tab=doc)
