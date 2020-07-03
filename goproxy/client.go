@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"time"
 
+	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/module"
 )
 
@@ -85,6 +86,29 @@ func (c *Client) DownloadSources(moduleName string, version string) (io.ReadClos
 	}
 
 	return resp.Body, nil
+}
+
+// GetModFile gets go.mod file.
+func (c *Client) GetModFile(moduleName string, version string) (*modfile.File, error) {
+	uri := fmt.Sprintf("%s/%s/@v/%s.mod", c.proxyURL, mustEscapePath(moduleName), version)
+
+	resp, err := c.HTTPClient.Get(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode/100 != 2 {
+		return nil, fmt.Errorf("invalid response: %s [%d]", resp.Status, resp.StatusCode)
+	}
+
+	all, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return modfile.Parse("go.mod", all, nil)
 }
 
 // GetVersions gets all available module versions.

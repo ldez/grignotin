@@ -56,6 +56,17 @@ func TestClient_GetInfo(t *testing.T) {
 	fmt.Println(info)
 }
 
+func TestClient_GetModFile(t *testing.T) {
+	client := NewClient("")
+
+	file, err := client.GetModFile("github.com/ldez/grignotin", "v0.1.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(file)
+}
+
 func TestClient_GetLatest(t *testing.T) {
 	client := NewClient("")
 
