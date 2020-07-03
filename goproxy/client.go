@@ -58,8 +58,7 @@ func (c *Client) GetSources(moduleName string, version string) ([]byte, error) {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode/100 != 2 {
-		raw, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("invalid response: %s [%d]: %s", resp.Status, resp.StatusCode, string(raw))
+		return nil, handleError(resp)
 	}
 
 	raw, err := ioutil.ReadAll(resp.Body)
@@ -81,8 +80,7 @@ func (c *Client) DownloadSources(moduleName string, version string) (io.ReadClos
 	}
 
 	if resp.StatusCode/100 != 2 {
-		raw, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("invalid response: %s [%d]: %s", resp.Status, resp.StatusCode, string(raw))
+		return nil, handleError(resp)
 	}
 
 	return resp.Body, nil
@@ -100,7 +98,7 @@ func (c *Client) GetModFile(moduleName string, version string) (*modfile.File, e
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("invalid response: %s [%d]", resp.Status, resp.StatusCode)
+		return nil, handleError(resp)
 	}
 
 	all, err := ioutil.ReadAll(resp.Body)
@@ -124,7 +122,7 @@ func (c *Client) GetVersions(moduleName string) ([]string, error) {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("invalid response: %s [%d]", resp.Status, resp.StatusCode)
+		return nil, handleError(resp)
 	}
 
 	var versions []string
@@ -158,7 +156,7 @@ func (c *Client) getInfo(uri string) (*VersionInfo, error) {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("invalid response: %s [%d]", resp.Status, resp.StatusCode)
+		return nil, handleError(resp)
 	}
 
 	info := VersionInfo{}
@@ -177,4 +175,13 @@ func mustEscapePath(path string) string {
 	}
 
 	return escapePath
+}
+
+func handleError(resp *http.Response) error {
+	all, _ := ioutil.ReadAll(resp.Body)
+
+	return &APIError{
+		StatusCode: resp.StatusCode,
+		Message:    fmt.Sprintf("%s: %s", resp.Status, string(all)),
+	}
 }
