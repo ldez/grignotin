@@ -47,7 +47,7 @@ func NewClient(proxyURL string) *Client {
 }
 
 // GetSources gets the contents of the archive file.
-func (c *Client) GetSources(moduleName string, version string) ([]byte, error) {
+func (c *Client) GetSources(moduleName, version string) ([]byte, error) {
 	uri := fmt.Sprintf("%s/%s/@v/%s.zip", c.proxyURL, mustEscapePath(moduleName), version)
 
 	resp, err := c.HTTPClient.Get(uri)
@@ -71,7 +71,7 @@ func (c *Client) GetSources(moduleName string, version string) ([]byte, error) {
 
 // DownloadSources returns an io.ReadCloser that reads the contents of the archive file.
 // It is the caller's responsibility to close the ReadCloser.
-func (c *Client) DownloadSources(moduleName string, version string) (io.ReadCloser, error) {
+func (c *Client) DownloadSources(moduleName, version string) (io.ReadCloser, error) {
 	uri := fmt.Sprintf("%s/%s/@v/%s.zip", c.proxyURL, mustEscapePath(moduleName), version)
 
 	resp, err := c.HTTPClient.Get(uri)
@@ -87,7 +87,7 @@ func (c *Client) DownloadSources(moduleName string, version string) (io.ReadClos
 }
 
 // GetModFile gets go.mod file.
-func (c *Client) GetModFile(moduleName string, version string) (*modfile.File, error) {
+func (c *Client) GetModFile(moduleName, version string) (*modfile.File, error) {
 	uri := fmt.Sprintf("%s/%s/@v/%s.mod", c.proxyURL, mustEscapePath(moduleName), version)
 
 	resp, err := c.HTTPClient.Get(uri)
@@ -137,7 +137,7 @@ func (c *Client) GetVersions(moduleName string) ([]string, error) {
 
 // GetInfo gets information about a module version.
 //	<proxy URL>/<module name>/@v/<version>.info
-func (c *Client) GetInfo(moduleName string, version string) (*VersionInfo, error) {
+func (c *Client) GetInfo(moduleName, version string) (*VersionInfo, error) {
 	return c.getInfo(fmt.Sprintf("%s/%s/@v/%s.info", c.proxyURL, mustEscapePath(moduleName), version))
 }
 
