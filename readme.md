@@ -1,7 +1,7 @@
 # Grignotin
 
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/ldez/grignotin.svg)](https://github.com/ldez/grignotin/releases)
-[![GoDoc](https://godoc.org/github.com/ldez/grignotin?status.svg)](https://godoc.org/github.com/ldez/grignotin)
+[![GoDoc](https://godoc.org/github.com/ldez/grignotin?status.svg)](https://pkg.go.dev/github.com/ldez/grignotin?tab=doc)
 [![Build Status](https://travis-ci.com/ldez/grignotin.svg?branch=master)](https://travis-ci.com/ldez/grignotin)
 
 A collection of small helpers around Go proxy, Go meta information, etc.
