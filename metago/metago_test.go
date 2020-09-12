@@ -72,10 +72,6 @@ func TestGet(t *testing.T) {
 			desc:     "bitbucket.org/dtolpin/wigp",
 			expected: "bitbucket.org/dtolpin/wigp",
 		},
-		{
-			desc:     "bitbucket.org/StephaneBunel/xxhash-go",
-			expected: "bitbucket.org/StephaneBunel/xxhash-go",
-		},
 	}
 
 	for _, test := range testCases {
