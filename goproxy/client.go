@@ -1,4 +1,5 @@
 // Package goproxy simple client for go modules proxy
+// https://golang.org/cmd/go/#hdr-Module_proxy_protocol
 // https://docs.gomods.io/intro/protocol/
 // https://go.googlesource.com/proposal/+/master/design/25530-sumdb.md
 package goproxy
@@ -35,7 +36,7 @@ type Client struct {
 // NewClient creates a new Client.
 func NewClient(proxyURL string) *Client {
 	client := &Client{
-		HTTPClient: &http.Client{},
+		HTTPClient: &http.Client{Timeout: 10 * time.Second},
 	}
 
 	client.proxyURL = defaultProxyURL
