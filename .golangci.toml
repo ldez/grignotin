@@ -31,10 +31,14 @@
     "gomnd",
     "bodyclose", # Too many false-positive and panics.
     "wsl", # Too strict
-    "goerr113",
-    "testpackage",
-    "noctx",
     "nlreturn",
+    "goerr113",
+    "wrapcheck",
+    "testpackage",
+    "paralleltest",
+    "tparallel",
+    "noctx",
+    "exhaustivestruct",
   ]
 
 [issues]

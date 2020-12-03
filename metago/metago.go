@@ -74,7 +74,7 @@ func parseMetaGo(r io.Reader) (*MetaGo, error) {
 	for {
 		token, err := decoder.RawToken()
 		if err != nil {
-			if err != io.EOF && len(meta.GoSource) == 0 && len(meta.GoImport) == 0 {
+			if !errors.Is(err, io.EOF) && len(meta.GoSource) == 0 && len(meta.GoImport) == 0 {
 				return nil, err
 			}
 			break
