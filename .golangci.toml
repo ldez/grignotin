@@ -39,6 +39,7 @@
     "tparallel",
     "noctx",
     "exhaustivestruct",
+    "makezero",
   ]
 
 [issues]
@@ -50,6 +51,10 @@
   [[issues.exclude-rules]]
     path = "(.+)_test.go"
     linters = ["funlen"]
+
+  [[issues.exclude-rules]]
+    path = "goproxy/client_test.go"
+    linters = ["forbidigo", "makezero"] # must be only forbidigo https://github.com/golangci/golangci-lint/pull/1590
 
   [[issues.exclude-rules]]
     path = "metago/metago.go"
