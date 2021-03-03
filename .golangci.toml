@@ -24,22 +24,47 @@
     lines = 60 # default 60
     statements = 40 # default 40
 
+  [linters-settings.forbidigo]
+    forbid = [
+      '^print(ln)?$',
+      '^fmt\.Print(f|ln)?$',
+      '^spew\.Print(f|ln)?$',
+      '^spew\.Dump$',
+    ]
+
+  [linters-settings.depguard]
+    list-type = "blacklist"
+    include-go-root = false
+    packages = ["github.com/pkg/errors"]
+
+  [linters-settings.godox]
+    keywords = ["FIXME"]
 
 [linters]
   enable-all = true
   disable = [
-    "gomnd",
+    "scopelint", # Deprecated
+    "interfacer", # Deprecated
+    "maligned", # Deprecated
+    "sqlclosecheck", # Not relevant (SQL)
+    "rowserrcheck", # Not relevant (SQL)
+    "cyclop",
     "bodyclose", # Too many false-positive and panics.
+    "prealloc",
+    "lll",
+    "gomnd",
     "wsl", # Too strict
     "nlreturn",
     "goerr113",
     "wrapcheck",
     "testpackage",
-    "paralleltest",
     "tparallel",
-    "noctx",
+    "paralleltest",
+    "exhaustive",
     "exhaustivestruct",
     "makezero",
+    "ifshort",
+    "noctx",
   ]
 
 [issues]
@@ -54,7 +79,7 @@
 
   [[issues.exclude-rules]]
     path = "goproxy/client_test.go"
-    linters = ["forbidigo", "makezero"] # must be only forbidigo https://github.com/golangci/golangci-lint/pull/1590
+    linters = ["forbidigo"]
 
   [[issues.exclude-rules]]
     path = "metago/metago.go"
