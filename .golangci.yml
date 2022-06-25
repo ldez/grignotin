@@ -1,0 +1,78 @@
+run:
+  timeout: 5m
+  skip-files: []
+
+linters-settings:
+  govet:
+    check-shadowing: true
+  gocyclo:
+    min-complexity: 14
+  maligned:
+    suggest-new: true
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  misspell:
+    locale: US
+  funlen:
+    lines: 60
+    statements: 40
+  forbidigo:
+    forbid:
+      - ^print(ln)?$
+      - ^fmt\.Print(f|ln)?$
+      - ^spew\.Print(f|ln)?$
+      - ^spew\.Dump$
+  depguard:
+    list-type: blacklist
+    include-go-root: false
+    packages:
+      - github.com/pkg/errors
+  godox:
+    keywords:
+      - FIXME
+
+linters:
+  enable-all: true
+  disable:
+    - scopelint # Deprecated
+    - interfacer # Deprecated
+    - maligned # Deprecated
+    - golint # Deprecated
+    - exhaustivestruct # Deprecated
+    - sqlclosecheck # Not relevant (SQL)
+    - rowserrcheck # Not relevant (SQL)
+    - execinquery # Not relevant (SQL)
+    - cyclop
+    - bodyclose
+    - prealloc
+    - lll
+    - gomnd
+    - wsl
+    - nlreturn
+    - goerr113
+    - wrapcheck
+    - testpackage
+    - tparallel
+    - paralleltest
+    - exhaustive
+    - exhaustruct
+    - makezero
+    - ifshort
+    - noctx
+    - varnamelen
+
+issues:
+  exclude-use-default: false
+  max-per-linter: 0
+  max-same-issues: 0
+  exclude: []
+  exclude-rules:
+    - path: (.+)_test.go
+      linters:
+        - funlen
+    - path: goproxy/client_test.go
+      linters:
+        - forbidigo
+    - path: metago/metago.go
+      text: cyclomatic complexity 15 of func `parseMetaGo` is high
