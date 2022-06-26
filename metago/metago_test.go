@@ -1,6 +1,7 @@
 package metago
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -54,7 +55,7 @@ func TestGet(t *testing.T) {
 		},
 		{
 			desc:     "launchpad.net/gocheck",
-			expected: "launchpad.net/gocheck",
+			expected: "launchpad.net/~niemeyer/gocheck/trunk",
 		},
 		{
 			desc:     "code.gitea.io/sdk/gitea",
@@ -82,8 +83,10 @@ func TestGet(t *testing.T) {
 			meta, err := Get(test.desc)
 			require.NoError(t, err)
 
-			t.Log(meta.GoImport)
-			t.Log(meta.GoSource)
+			t.Log(meta.Pkg)
+			t.Log(strings.Join(meta.GoSource, ","))
+			t.Log(strings.Join(meta.GoImport, ","))
+
 			assert.Equal(t, test.expected, EffectivePkgSource(meta))
 		})
 	}

@@ -135,9 +135,21 @@ func EffectivePkgSource(m *MetaGo) string {
 		return strings.Join(split[2:5], "/")
 	}
 
-	if len(m.GoImport) == 0 {
+	switch len(m.GoImport) {
+	case 0:
 		return m.Pkg
-	}
 
-	return m.GoImport[0]
+	case 1:
+		return m.GoImport[0]
+
+	default:
+		v := strings.TrimSuffix(m.GoImport[2], "."+m.GoImport[1])
+
+		index := strings.Index(v, "//")
+		if index == -1 {
+			return v
+		}
+
+		return v[index+2:]
+	}
 }
