@@ -47,7 +47,7 @@ func TestGet(t *testing.T) {
 		},
 		{
 			desc:     "golang.org/x/crypto",
-			expected: "github.com/golang/crypto",
+			expected: "go.googlesource.com/crypto",
 		},
 		{
 			desc:     "google.golang.org/grpc",
