@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -20,6 +19,8 @@ import (
 const defaultProxyURL = "https://proxy.golang.org"
 
 // VersionInfo is the representation of a version.
+//
+//nolint:musttag // data from Go proxy.
 type VersionInfo struct {
 	Name    string
 	Short   string
@@ -62,7 +63,7 @@ func (c *Client) GetSources(moduleName, version string) ([]byte, error) {
 		return nil, handleError(resp)
 	}
 
-	raw, err := ioutil.ReadAll(resp.Body)
+	raw, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
@@ -102,7 +103,7 @@ func (c *Client) GetModFile(moduleName, version string) (*modfile.File, error) {
 		return nil, handleError(resp)
 	}
 
-	all, err := ioutil.ReadAll(resp.Body)
+	all, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -111,6 +112,7 @@ func (c *Client) GetModFile(moduleName, version string) (*modfile.File, error) {
 }
 
 // GetVersions gets all available module versions.
+//
 //	<proxy URL>/<module name>/@v/list
 func (c *Client) GetVersions(moduleName string) ([]string, error) {
 	uri := fmt.Sprintf("%s/%s/@v/list", c.proxyURL, mustEscapePath(moduleName))
@@ -137,12 +139,14 @@ func (c *Client) GetVersions(moduleName string) ([]string, error) {
 }
 
 // GetInfo gets information about a module version.
+//
 //	<proxy URL>/<module name>/@v/<version>.info
 func (c *Client) GetInfo(moduleName, version string) (*VersionInfo, error) {
 	return c.getInfo(fmt.Sprintf("%s/%s/@v/%s.info", c.proxyURL, mustEscapePath(moduleName), version))
 }
 
 // GetLatest gets information about the latest module version.
+//
 //	<proxy URL>/<module name>/@latest
 func (c *Client) GetLatest(moduleName string) (*VersionInfo, error) {
 	return c.getInfo(fmt.Sprintf("%s/%s/@latest", c.proxyURL, mustEscapePath(moduleName)))
@@ -179,7 +183,7 @@ func mustEscapePath(path string) string {
 }
 
 func handleError(resp *http.Response) error {
-	all, _ := ioutil.ReadAll(resp.Body)
+	all, _ := io.ReadAll(resp.Body)
 
 	return &APIError{
 		StatusCode: resp.StatusCode,

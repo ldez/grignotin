@@ -2,7 +2,7 @@ package goproxy
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 )
 
@@ -26,7 +26,7 @@ func TestClient_DownloadSources(t *testing.T) {
 	}
 	defer func() { _ = reader.Close() }()
 
-	raw, err := ioutil.ReadAll(reader)
+	raw, err := io.ReadAll(reader)
 	if err != nil {
 		t.Fatal(err)
 	}
