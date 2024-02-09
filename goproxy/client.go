@@ -19,8 +19,6 @@ import (
 const defaultProxyURL = "https://proxy.golang.org"
 
 // VersionInfo is the representation of a version.
-//
-//nolint:musttag // data from Go proxy.
 type VersionInfo struct {
 	Name    string
 	Short   string
@@ -165,6 +163,7 @@ func (c *Client) getInfo(uri string) (*VersionInfo, error) {
 	}
 
 	info := VersionInfo{}
+	//nolint:musttag // data from Go proxy.
 	err = json.NewDecoder(resp.Body).Decode(&info)
 	if err != nil {
 		return nil, err

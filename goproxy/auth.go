@@ -1,7 +1,7 @@
 package goproxy
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"time"
 )
@@ -19,7 +19,7 @@ type BasicAuthTransport struct {
 // NewBasicAuthTransport Creates a  new BasicAuthTransport.
 func NewBasicAuthTransport(username, password string) (*BasicAuthTransport, error) {
 	if username == "" || password == "" {
-		return nil, fmt.Errorf("credentials missing")
+		return nil, errors.New("credentials missing")
 	}
 
 	return &BasicAuthTransport{username: username, password: password}, nil
