@@ -36,12 +36,9 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-    - gomnd # deprecated
-    - execinquery # deprecated
-    - cyclop # duplicate of gocyclo
+    - exportloopref # deprecated
     - sqlclosecheck # not relevant (SQL)
     - rowserrcheck # not relevant (SQL)
-    - execinquery # not relevant (SQL)
     - cyclop
     - bodyclose
     - prealloc
