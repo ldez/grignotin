@@ -6,7 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"golang.org/x/mod/modfile"
 )
 
 // ModInfo Module information.
@@ -27,7 +32,7 @@ func GetModuleInfo() ([]ModInfo, error) {
 
 	out, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("command go list: %w: %s", err, string(out))
+		return nil, fmt.Errorf("command %q: %w: %s", strings.Join(cmd.Args, " "), err, string(out))
 	}
 
 	var infos []ModInfo
@@ -54,4 +59,41 @@ func GetModuleInfo() ([]ModInfo, error) {
 	}
 
 	return infos, nil
+}
+
+type goEnv struct {
+	GOMOD string `json:"GOMOD"` //nolint:tagliatelle // Based on en var name.
+}
+
+// GetGoModPath extracts go.mod path from "go env".
+func GetGoModPath() (string, error) {
+	cmd := exec.Command("go", "env", "-json", "GOMOD")
+
+	out, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("command %q: %w: %s", strings.Join(cmd.Args, " "), err, string(out))
+	}
+
+	v := &goEnv{}
+	err = json.NewDecoder(bytes.NewBuffer(out)).Decode(v)
+	if err != nil {
+		return "", err
+	}
+
+	return v.GOMOD, nil
+}
+
+// GetModulePath extracts module path from go.mod.
+func GetModulePath() (string, error) {
+	p, err := GetGoModPath()
+	if err != nil {
+		return "", err
+	}
+
+	b, err := os.ReadFile(filepath.Clean(p))
+	if err != nil {
+		return "", fmt.Errorf("reading go.mod: %w", err)
+	}
+
+	return modfile.ModulePath(b), nil
 }
