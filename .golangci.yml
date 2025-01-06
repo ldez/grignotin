@@ -74,3 +74,8 @@ issues:
     - linters:
         - usestdlibvars
       text: '"100" can be replaced by http.StatusContinue'
+    - path: goenv/names.go
+      linters:
+        - revive
+        - stylecheck
+      text: "use ALL_CAPS in Go names; use CamelCase"
