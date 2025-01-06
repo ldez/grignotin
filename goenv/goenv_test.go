@@ -19,10 +19,10 @@ func TestGetOne(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	values, err := Get(GOMOD, GO111MODULE)
+	values, err := Get(GOMOD, GOCACHE)
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, values[GOMOD])
-	assert.NotEmpty(t, values[GO111MODULE])
+	assert.NotEmpty(t, values[GOCACHE])
 	assert.Empty(t, values[GOEXE])
 }
