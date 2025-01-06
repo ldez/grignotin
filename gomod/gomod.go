@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ldez/grignotin/goenv"
 	"golang.org/x/mod/modfile"
 )
 
@@ -61,31 +62,15 @@ func GetModuleInfo() ([]ModInfo, error) {
 	return infos, nil
 }
 
-type goEnv struct {
-	GOMOD string `json:"GOMOD"` //nolint:tagliatelle // Based on en var name.
-}
-
 // GetGoModPath extracts go.mod path from "go env".
+// Deprecated: use goenv.GetOne(goenv.GOMOD) instead.
 func GetGoModPath() (string, error) {
-	cmd := exec.Command("go", "env", "-json", "GOMOD")
-
-	out, err := cmd.Output()
-	if err != nil {
-		return "", fmt.Errorf("command %q: %w: %s", strings.Join(cmd.Args, " "), err, string(out))
-	}
-
-	v := &goEnv{}
-	err = json.NewDecoder(bytes.NewBuffer(out)).Decode(v)
-	if err != nil {
-		return "", err
-	}
-
-	return v.GOMOD, nil
+	return goenv.GetOne(goenv.GOMOD)
 }
 
 // GetModulePath extracts module path from go.mod.
 func GetModulePath() (string, error) {
-	p, err := GetGoModPath()
+	p, err := goenv.GetOne(goenv.GOMOD)
 	if err != nil {
 		return "", err
 	}
