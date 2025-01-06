@@ -10,6 +10,8 @@ A collection of small helpers around Go proxy, Go meta information, etc.
 
 A small Go proxy client to get information about a module from a Go proxy.
 
+<details><summary>Example</summary>
+
 ```go
 package main
 
@@ -31,9 +33,13 @@ func main() {
 }
 ```
 
+</details>
+
 ## metago
 
 A small lib to fetch meta information (`go-import`, `go-source`) for a module.
+
+<details><summary>Example</summary>
 
 ```go
 package main
@@ -54,9 +60,13 @@ func main() {
 }
 ```
 
+</details>
+
 ## Version
 
 Gets information about releases and build. 
+
+<details><summary>Examples</summary>
 
 ```go
 package main
@@ -97,6 +107,121 @@ func main() {
 }
 ```
 
+</details>
+
 ## SumDB
 
 - I recommend using the package [sumdb](https://pkg.go.dev/golang.org/x/mod/sumdb?tab=doc)
+
+
+## gomod
+
+A set of functions to get information about module (`go list`/`go env`).
+
+<details><summary>Examples</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/gomod"
+)
+
+func main() {
+	info, err := gomod.GetModuleInfo()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(info)
+}
+```
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/gomod"
+)
+
+func main() {
+	modpath, err := gomod.GetModulePath()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(modpath)
+}
+
+```
+
+</details>
+
+## goenv
+
+A set of functions to get information from `go env`.
+
+<details><summary>Examples</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/goenv"
+)
+
+func main() {
+	value, err := goenv.GetOne(goenv.GOMOD)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(value)
+}
+```
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/goenv"
+)
+
+func main() {
+	values, err := goenv.Get(goenv.GOMOD, goenv.GOMODCACHE)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(values)
+}
+```
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ldez/grignotin/goenv"
+)
+
+func main() {
+	values, err := goenv.GetAll()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(values)
+}
+```
+
+</details>

@@ -1,4 +1,4 @@
-// Package gomod A function to get information about module (go list).
+// Package gomod A set of functions to get information about module (go list).
 package gomod
 
 import (
