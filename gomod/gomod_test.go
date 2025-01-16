@@ -1,6 +1,7 @@
 package gomod
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,7 +9,7 @@ import (
 )
 
 func TestGetModuleInfo(t *testing.T) {
-	info, err := GetModuleInfo()
+	info, err := GetModuleInfo(context.Background())
 	require.NoError(t, err)
 
 	require.Len(t, info, 1)
@@ -19,7 +20,7 @@ func TestGetModuleInfo(t *testing.T) {
 }
 
 func TestGetModulePath(t *testing.T) {
-	p, err := GetModulePath()
+	p, err := GetModulePath(context.Background())
 	require.NoError(t, err)
 
 	assert.Equal(t, "github.com/ldez/grignotin", p)

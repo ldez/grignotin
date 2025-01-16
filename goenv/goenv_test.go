@@ -1,6 +1,7 @@
 package goenv
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func TestGetOne(t *testing.T) {
-	p, err := GetOne(GOMOD)
+	p, err := GetOne(context.Background(), GOMOD)
 	require.NoError(t, err)
 
 	abs, err := filepath.Abs("..")
@@ -19,7 +20,7 @@ func TestGetOne(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	values, err := Get(GOMOD, GOCACHE)
+	values, err := Get(context.Background(), GOMOD, GOCACHE)
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, values[GOMOD])

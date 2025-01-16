@@ -3,6 +3,7 @@ package goenv
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -10,16 +11,8 @@ import (
 )
 
 // GetAll gets information from "go env".
-func GetAll() (map[string]string, error) {
-	cmd := exec.Command("go", "env", "-json")
-
-	out, err := cmd.Output()
-	if err != nil {
-		return nil, fmt.Errorf("command %q: %w: %s", strings.Join(cmd.Args, " "), err, string(out))
-	}
-
-	v := map[string]string{}
-	err = json.NewDecoder(bytes.NewBuffer(out)).Decode(&v)
+func GetAll(ctx context.Context) (map[string]string, error) {
+	v, err := Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -28,16 +21,8 @@ func GetAll() (map[string]string, error) {
 }
 
 // GetOne gets information from "go env" for one environment variable.
-func GetOne(name string) (string, error) {
-	cmd := exec.Command("go", "env", "-json", name)
-
-	out, err := cmd.Output()
-	if err != nil {
-		return "", fmt.Errorf("command %q: %w: %s", strings.Join(cmd.Args, " "), err, string(out))
-	}
-
-	v := map[string]string{}
-	err = json.NewDecoder(bytes.NewBuffer(out)).Decode(&v)
+func GetOne(ctx context.Context, name string) (string, error) {
+	v, err := Get(ctx, name)
 	if err != nil {
 		return "", err
 	}
@@ -46,9 +31,9 @@ func GetOne(name string) (string, error) {
 }
 
 // Get gets information from "go env" for one or several environment variables.
-func Get(name ...string) (map[string]string, error) {
+func Get(ctx context.Context, name ...string) (map[string]string, error) {
 	args := append([]string{"env", "-json"}, name...)
-	cmd := exec.Command("go", args...) //nolint:gosec // The env var names must be checked by the user.
+	cmd := exec.CommandContext(ctx, "go", args...) //nolint:gosec // The env var names must be checked by the user.
 
 	out, err := cmd.Output()
 	if err != nil {

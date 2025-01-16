@@ -3,6 +3,7 @@ package gomod
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,9 +28,9 @@ type ModInfo struct {
 }
 
 // GetModuleInfo gets modules information from `go list`.
-func GetModuleInfo() ([]ModInfo, error) {
+func GetModuleInfo(ctx context.Context) ([]ModInfo, error) {
 	// https://github.com/golang/go/issues/44753#issuecomment-790089020
-	cmd := exec.Command("go", "list", "-m", "-json")
+	cmd := exec.CommandContext(ctx, "go", "list", "-m", "-json")
 
 	out, err := cmd.Output()
 	if err != nil {
@@ -62,15 +63,9 @@ func GetModuleInfo() ([]ModInfo, error) {
 	return infos, nil
 }
 
-// GetGoModPath extracts go.mod path from "go env".
-// Deprecated: use goenv.GetOne(goenv.GOMOD) instead.
-func GetGoModPath() (string, error) {
-	return goenv.GetOne(goenv.GOMOD)
-}
-
 // GetModulePath extracts module path from go.mod.
-func GetModulePath() (string, error) {
-	p, err := goenv.GetOne(goenv.GOMOD)
+func GetModulePath(ctx context.Context) (string, error) {
+	p, err := goenv.GetOne(ctx, goenv.GOMOD)
 	if err != nil {
 		return "", err
 	}
@@ -81,4 +76,10 @@ func GetModulePath() (string, error) {
 	}
 
 	return modfile.ModulePath(b), nil
+}
+
+// GetGoModPath extracts go.mod path from "go env".
+// Deprecated: use `goenv.GetOne(context.Background(), goenv.GOMOD)` instead.
+func GetGoModPath() (string, error) {
+	return goenv.GetOne(context.Background(), goenv.GOMOD)
 }
