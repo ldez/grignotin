@@ -1,81 +1,78 @@
-run:
-  timeout: 5m
+version: "2"
 
-linters-settings:
-  govet:
-    enable:
-      - shadow
-  gocyclo:
-    min-complexity: 14
-  goconst:
-    min-len: 3
-    min-occurrences: 3
-  misspell:
-    locale: US
-  funlen:
-    lines: 60
-    statements: 40
-  forbidigo:
-    forbid:
-      - ^print(ln)?$
-      - ^fmt\.Print(f|ln)?$
-      - ^spew\.Print(f|ln)?$
-      - ^spew\.Dump$
-  depguard:
-    rules:
-      main:
-        deny:
-          - pkg: "github.com/instana/testify"
-            desc: not allowed
-          - pkg: "github.com/pkg/errors"
-            desc: Should be replaced by standard lib errors package
-  godox:
-    keywords:
-      - FIXME
+formatters:
+  enable:
+    - gci
+    - gofumpt
 
 linters:
-  enable-all: true
+  default: all
   disable:
-    - exportloopref # deprecated
-    - sqlclosecheck # not relevant (SQL)
-    - rowserrcheck # not relevant (SQL)
-    - cyclop
     - bodyclose
-    - prealloc
-    - lll
-    - mnd
-    - wsl
-    - nlreturn
+    - cyclop
     - err113
-    - wrapcheck
-    - testpackage
-    - tparallel
-    - paralleltest
     - exhaustive
     - exhaustruct
+    - lll
     - makezero
+    - mnd
+    - nlreturn
     - noctx
+    - paralleltest
+    - prealloc
+    - rowserrcheck # not relevant (SQL)
+    - sqlclosecheck # not relevant (SQL)
+    - testpackage
+    - tparallel
     - varnamelen
+    - wrapcheck
+    - wsl
+  settings:
+    depguard:
+      rules:
+        main:
+          deny:
+            - pkg: github.com/instana/testify
+              desc: not allowed
+            - pkg: github.com/pkg/errors
+              desc: Should be replaced by standard lib errors package
+    forbidigo:
+      forbid:
+        - pattern: ^print(ln)?$
+        - pattern: ^fmt\.Print(f|ln)?$
+        - pattern: ^spew\.Print(f|ln)?$
+        - pattern: ^spew\.Dump$
+    funlen:
+      lines: 60
+      statements: 40
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+    gocyclo:
+      min-complexity: 14
+    godox:
+      keywords:
+        - FIXME
+    govet:
+      enable:
+        - shadow
+    misspell:
+      locale: US
+  exclusions:
+    warn-unused: true
+    rules:
+      - linters:
+          - funlen
+        path: (.+)_test.go
+      - linters:
+          - forbidigo
+        path: goproxy/client_test.go
+      - linters:
+          - revive
+          - staticcheck
+        path: goenv/names.go
+        text: use ALL_CAPS in Go names; use CamelCase
 
 issues:
-  exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude: []
-  exclude-rules:
-    - path: (.+)_test.go
-      linters:
-        - funlen
-    - path: goproxy/client_test.go
-      linters:
-        - forbidigo
-    - path: metago/metago.go
-      text: cyclomatic complexity 15 of func `parseMetaGo` is high
-    - linters:
-        - usestdlibvars
-      text: '"100" can be replaced by http.StatusContinue'
-    - path: goenv/names.go
-      linters:
-        - revive
-        - stylecheck
-      text: "use ALL_CAPS in Go names; use CamelCase"
