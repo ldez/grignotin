@@ -124,13 +124,14 @@ A set of functions to get information about module (`go list`/`go env`).
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ldez/grignotin/gomod"
 )
 
 func main() {
-	info, err := gomod.GetModuleInfo()
+	info, err := gomod.GetModuleInfo(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -143,13 +144,14 @@ func main() {
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ldez/grignotin/gomod"
 )
 
 func main() {
-	modpath, err := gomod.GetModulePath()
+	modpath, err := gomod.GetModulePath(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -171,13 +173,14 @@ A set of functions to get information from `go env`.
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ldez/grignotin/goenv"
 )
 
 func main() {
-	value, err := goenv.GetOne(goenv.GOMOD)
+	value, err := goenv.GetOne(context.Background(), goenv.GOMOD)
 	if err != nil {
 		panic(err)
 	}
@@ -190,13 +193,14 @@ func main() {
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ldez/grignotin/goenv"
 )
 
 func main() {
-	values, err := goenv.Get(goenv.GOMOD, goenv.GOMODCACHE)
+	values, err := goenv.Get(context.Background(), goenv.GOMOD, goenv.GOMODCACHE)
 	if err != nil {
 		panic(err)
 	}
@@ -209,13 +213,14 @@ func main() {
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ldez/grignotin/goenv"
 )
 
 func main() {
-	values, err := goenv.GetAll()
+	values, err := goenv.GetAll(context.Background())
 	if err != nil {
 		panic(err)
 	}
