@@ -3,6 +3,7 @@ package goproxy
 import (
 	"errors"
 	"net/http"
+	"slices"
 	"time"
 )
 
@@ -32,7 +33,7 @@ func (t *BasicAuthTransport) RoundTrip(req *http.Request) (*http.Response, error
 
 	enrichedReq.Header = make(http.Header, len(req.Header))
 	for k, s := range req.Header {
-		enrichedReq.Header[k] = append([]string(nil), s...)
+		enrichedReq.Header[k] = slices.Clone(s)
 	}
 
 	if t.username != "" && t.password != "" {
