@@ -46,8 +46,10 @@ func (t *BasicAuthTransport) RoundTrip(req *http.Request) (*http.Response, error
 // Wrap Wraps an HTTP client Transport with the BasicAuthTransport.
 func (t *BasicAuthTransport) Wrap(client *http.Client) *http.Client {
 	backup := client.Transport
+
 	t.Transport = backup
 	client.Transport = t
+
 	return client
 }
 
@@ -63,5 +65,6 @@ func (t *BasicAuthTransport) transport() http.RoundTripper {
 	if t.Transport != nil {
 		return t.Transport
 	}
+
 	return http.DefaultTransport
 }

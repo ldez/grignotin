@@ -30,6 +30,7 @@ func Get(moduleName string) (*MetaGo, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
@@ -56,6 +57,7 @@ func Get(moduleName string) (*MetaGo, error) {
 
 func makeURL(moduleName string) string {
 	name := moduleName
+
 	exp := regexp.MustCompile(`(.+/.+)/v\d+$`)
 	if exp.MatchString(moduleName) {
 		name = exp.FindStringSubmatch(moduleName)[1]
@@ -77,12 +79,14 @@ func parseMetaGo(r io.Reader) (*MetaGo, error) {
 			if !errors.Is(err, io.EOF) && len(meta.GoSource) == 0 && len(meta.GoImport) == 0 {
 				return nil, err
 			}
+
 			break
 		}
 
 		if e, ok := token.(xml.StartElement); ok && strings.EqualFold(e.Name.Local, "body") {
 			break
 		}
+
 		if e, ok := token.(xml.EndElement); ok && strings.EqualFold(e.Name.Local, "head") {
 			break
 		}
@@ -120,6 +124,7 @@ func attrValue(attrs []xml.Attr, name string) string {
 			return a.Value
 		}
 	}
+
 	return ""
 }
 
@@ -132,6 +137,7 @@ func EffectivePkgSource(m *MetaGo) string {
 	if len(m.GoSource) > 0 {
 		a := m.GoSource[len(m.GoSource)-1]
 		split := strings.Split(a, "/")
+
 		return strings.Join(split[2:5], "/")
 	}
 

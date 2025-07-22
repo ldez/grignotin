@@ -24,6 +24,7 @@ func TestClient_DownloadSources(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() { _ = reader.Close() }()
 
 	raw, err := io.ReadAll(reader)

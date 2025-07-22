@@ -36,9 +36,11 @@ func GetReleases(all bool) ([]Release, error) {
 
 	query := dlURL.Query()
 	query.Set("mode", "json")
+
 	if all {
 		query.Set("include", "all")
 	}
+
 	dlURL.RawQuery = query.Encode()
 
 	resp, err := http.Get(dlURL.String())
@@ -51,6 +53,7 @@ func GetReleases(all bool) ([]Release, error) {
 	}
 
 	var releases []Release
+
 	err = json.NewDecoder(resp.Body).Decode(&releases)
 	if err != nil {
 		return nil, err

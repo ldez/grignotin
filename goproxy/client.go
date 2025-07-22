@@ -127,6 +127,7 @@ func (c *Client) GetVersions(moduleName string) ([]string, error) {
 	}
 
 	var versions []string
+
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		line := scanner.Text()

@@ -18,6 +18,7 @@ linters:
     - mnd
     - nlreturn
     - noctx
+    - noinlineerr
     - paralleltest
     - prealloc
     - rowserrcheck # not relevant (SQL)
@@ -26,7 +27,7 @@ linters:
     - tparallel
     - varnamelen
     - wrapcheck
-    - wsl
+    - wsl # deprecated
   settings:
     depguard:
       rules:

@@ -50,6 +50,7 @@ func GetBuild() (*Build, error) {
 	}
 
 	var build Build
+
 	err = json.NewDecoder(resp.Body).Decode(&build)
 	if err != nil {
 		return nil, err
