@@ -1,6 +1,7 @@
 package version
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -29,6 +30,11 @@ type File struct {
 
 // GetReleases gets build information.
 func GetReleases(all bool) ([]Release, error) {
+	return GetReleasesWithContext(context.Background(), all)
+}
+
+// GetReleasesWithContext gets build information.
+func GetReleasesWithContext(ctx context.Context, all bool) ([]Release, error) {
 	dlURL, err := url.Parse(baseDLURL)
 	if err != nil {
 		return nil, err
@@ -43,7 +49,12 @@ func GetReleases(all bool) ([]Release, error) {
 
 	dlURL.RawQuery = query.Encode()
 
-	resp, err := http.Get(dlURL.String())
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, dlURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

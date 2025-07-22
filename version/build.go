@@ -1,6 +1,7 @@
 package version
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -31,6 +32,11 @@ type Revision struct {
 
 // GetBuild gets build information.
 func GetBuild() (*Build, error) {
+	return GetBuildWithContext(context.Background())
+}
+
+// GetBuildWithContext gets build information.
+func GetBuildWithContext(ctx context.Context) (*Build, error) {
 	dlURL, err := url.Parse(baseBuildURL)
 	if err != nil {
 		return nil, err
@@ -40,7 +46,12 @@ func GetBuild() (*Build, error) {
 	query.Set("mode", "json")
 	dlURL.RawQuery = query.Encode()
 
-	resp, err := http.Get(dlURL.String())
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, dlURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
