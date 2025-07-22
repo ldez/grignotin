@@ -6,10 +6,12 @@ package goproxy
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"golang.org/x/mod/modfile"
@@ -28,7 +30,7 @@ type VersionInfo struct {
 
 // Client is the go modules proxy client.
 type Client struct {
-	proxyURL   string
+	proxyURL   *url.URL
 	HTTPClient *http.Client
 }
 
@@ -38,9 +40,15 @@ func NewClient(proxyURL string) *Client {
 		HTTPClient: &http.Client{Timeout: 10 * time.Second},
 	}
 
-	client.proxyURL = defaultProxyURL
+	client.proxyURL, _ = url.Parse(defaultProxyURL)
 	if proxyURL != "" {
-		client.proxyURL = proxyURL
+		var err error
+
+		client.proxyURL, err = url.Parse(proxyURL)
+		if err != nil {
+			// Use a panic to be non-breaking, but the [NewClient] signature must be changed.
+			panic(err)
+		}
 	}
 
 	return client
@@ -48,9 +56,19 @@ func NewClient(proxyURL string) *Client {
 
 // GetSources gets the contents of the archive file.
 func (c *Client) GetSources(moduleName, version string) ([]byte, error) {
-	uri := fmt.Sprintf("%s/%s/@v/%s.zip", c.proxyURL, mustEscapePath(moduleName), version)
+	return c.GetSourcesWithContext(context.Background(), moduleName, version)
+}
 
-	resp, err := c.HTTPClient.Get(uri)
+// GetSourcesWithContext gets the contents of the archive file.
+func (c *Client) GetSourcesWithContext(ctx context.Context, moduleName, version string) ([]byte, error) {
+	endpoint := c.proxyURL.JoinPath(mustEscapePath(moduleName), "@v", version+".zip")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +90,20 @@ func (c *Client) GetSources(moduleName, version string) ([]byte, error) {
 // DownloadSources returns an io.ReadCloser that reads the contents of the archive file.
 // It is the caller's responsibility to close the ReadCloser.
 func (c *Client) DownloadSources(moduleName, version string) (io.ReadCloser, error) {
-	uri := fmt.Sprintf("%s/%s/@v/%s.zip", c.proxyURL, mustEscapePath(moduleName), version)
+	return c.DownloadSourcesWithContext(context.Background(), moduleName, version)
+}
 
-	resp, err := c.HTTPClient.Get(uri)
+// DownloadSourcesWithContext returns an io.ReadCloser that reads the contents of the archive file.
+// It is the caller's responsibility to close the ReadCloser.
+func (c *Client) DownloadSourcesWithContext(ctx context.Context, moduleName, version string) (io.ReadCloser, error) {
+	endpoint := c.proxyURL.JoinPath(mustEscapePath(moduleName), "@v", version+".zip")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -88,9 +117,19 @@ func (c *Client) DownloadSources(moduleName, version string) (io.ReadCloser, err
 
 // GetModFile gets go.mod file.
 func (c *Client) GetModFile(moduleName, version string) (*modfile.File, error) {
-	uri := fmt.Sprintf("%s/%s/@v/%s.mod", c.proxyURL, mustEscapePath(moduleName), version)
+	return c.GetModFileWithContext(context.Background(), moduleName, version)
+}
 
-	resp, err := c.HTTPClient.Get(uri)
+// GetModFileWithContext gets go.mod file.
+func (c *Client) GetModFileWithContext(ctx context.Context, moduleName, version string) (*modfile.File, error) {
+	endpoint := c.proxyURL.JoinPath(mustEscapePath(moduleName), "@v", version+".mod")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -113,9 +152,21 @@ func (c *Client) GetModFile(moduleName, version string) (*modfile.File, error) {
 //
 //	<proxy URL>/<module name>/@v/list
 func (c *Client) GetVersions(moduleName string) ([]string, error) {
-	uri := fmt.Sprintf("%s/%s/@v/list", c.proxyURL, mustEscapePath(moduleName))
+	return c.GetVersionsWithContext(context.Background(), moduleName)
+}
 
-	resp, err := c.HTTPClient.Get(uri)
+// GetVersionsWithContext gets all available module versions.
+//
+//	<proxy URL>/<module name>/@v/list
+func (c *Client) GetVersionsWithContext(ctx context.Context, moduleName string) ([]string, error) {
+	endpoint := c.proxyURL.JoinPath(mustEscapePath(moduleName), "@v", "list")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -141,18 +192,37 @@ func (c *Client) GetVersions(moduleName string) ([]string, error) {
 //
 //	<proxy URL>/<module name>/@v/<version>.info
 func (c *Client) GetInfo(moduleName, version string) (*VersionInfo, error) {
-	return c.getInfo(fmt.Sprintf("%s/%s/@v/%s.info", c.proxyURL, mustEscapePath(moduleName), version))
+	return c.GetInfoWithContext(context.Background(), moduleName, version)
+}
+
+// GetInfoWithContext gets information about a module version.
+//
+//	<proxy URL>/<module name>/@v/<version>.info
+func (c *Client) GetInfoWithContext(ctx context.Context, moduleName, version string) (*VersionInfo, error) {
+	return c.getInfo(ctx, c.proxyURL.JoinPath(mustEscapePath(moduleName), "@v", version+".info"))
 }
 
 // GetLatest gets information about the latest module version.
 //
 //	<proxy URL>/<module name>/@latest
 func (c *Client) GetLatest(moduleName string) (*VersionInfo, error) {
-	return c.getInfo(fmt.Sprintf("%s/%s/@latest", c.proxyURL, mustEscapePath(moduleName)))
+	return c.GetLatestWithContext(context.Background(), moduleName)
 }
 
-func (c *Client) getInfo(uri string) (*VersionInfo, error) {
-	resp, err := c.HTTPClient.Get(uri)
+// GetLatestWithContext gets information about the latest module version.
+//
+//	<proxy URL>/<module name>/@latest
+func (c *Client) GetLatestWithContext(ctx context.Context, moduleName string) (*VersionInfo, error) {
+	return c.getInfo(ctx, c.proxyURL.JoinPath(mustEscapePath(moduleName), "@latest"))
+}
+
+func (c *Client) getInfo(ctx context.Context, endpoint *url.URL) (*VersionInfo, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
