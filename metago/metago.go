@@ -3,6 +3,7 @@
 package metago
 
 import (
+	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -19,9 +20,14 @@ type MetaGo struct {
 	GoImport []string
 }
 
-// Get gets go-get meta information from the meta tags.
+// Get gets go-get meta-information from the meta-tags.
 func Get(moduleName string) (*MetaGo, error) {
-	req, err := http.NewRequest(http.MethodGet, makeURL(moduleName), nil)
+	return GetWithContext(context.Background(), moduleName)
+}
+
+// GetWithContext gets go-get meta-information from the meta-tags.
+func GetWithContext(ctx context.Context, moduleName string) (*MetaGo, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, makeURL(moduleName), nil)
 	if err != nil {
 		return nil, err
 	}
