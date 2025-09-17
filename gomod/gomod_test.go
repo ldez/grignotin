@@ -15,7 +15,7 @@ func TestGetModuleInfo(t *testing.T) {
 	require.Len(t, info, 1)
 
 	assert.Equal(t, "github.com/ldez/grignotin", info[0].Path)
-	assert.Equal(t, "1.23.0", info[0].GoVersion)
+	assert.Equal(t, "1.24.0", info[0].GoVersion)
 	assert.True(t, info[0].Main)
 }
 
