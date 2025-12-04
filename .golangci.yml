@@ -58,6 +58,9 @@ linters:
         - shadow
     misspell:
       locale: US
+    modernize:
+      disable:
+        - stringscut
   exclusions:
     warn-unused: true
     rules:

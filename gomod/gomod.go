@@ -79,6 +79,7 @@ func GetModulePath(ctx context.Context) (string, error) {
 }
 
 // GetGoModPath extracts go.mod path from "go env".
+//
 // Deprecated: use `goenv.GetOne(context.Background(), goenv.GOMOD)` instead.
 func GetGoModPath() (string, error) {
 	return goenv.GetOne(context.Background(), goenv.GOMOD)
