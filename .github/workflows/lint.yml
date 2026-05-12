@@ -1,4 +1,4 @@
-name: Main
+name: Linting
 
 on:
   push:
@@ -8,31 +8,29 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
 
-  main:
-    name: Main Process
+  lint-go:
+    name: golangci-lint
     runs-on: ubuntu-latest
     env:
       GO_VERSION: stable
-      GOLANGCI_LINT_VERSION: v2.7.2
+      GOLANGCI_LINT_VERSION: v2.12
       CGO_ENABLED: 0
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Check and get dependencies
-        run: |
-          go mod download
-          go mod tidy --diff
+        run: go mod tidy --diff
 
       - uses: golangci/golangci-lint-action@v9
         with:
           version: ${{ env.GOLANGCI_LINT_VERSION }}
-          install-only: true
-
-      - name: Make
-        run: make

@@ -1,10 +1,10 @@
 module github.com/ldez/grignotin
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/mod v0.31.0
+	golang.org/x/mod v0.36.0
 )
 
 require (

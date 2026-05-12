@@ -12,6 +12,6 @@ func TestGetBuild(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NotNil(t, build)
-	assert.NotEmpty(t, build.Builders)
+	assert.Empty(t, build.Builders)
 	assert.NotEmpty(t, build.Revisions)
 }

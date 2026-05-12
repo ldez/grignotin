@@ -34,7 +34,7 @@ func TestTokenTransport_RoundTrip(t *testing.T) {
 	transport, err := NewBasicAuthTransport(username, password)
 	require.NoError(t, err)
 
-	req := httptest.NewRequest(http.MethodGet, "http://example.com", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "http://example.com", nil)
 
 	resp, err := transport.RoundTrip(req)
 	require.NoError(t, err)

@@ -37,16 +37,16 @@ func GetBuild() (*Build, error) {
 
 // GetBuildWithContext gets build information.
 func GetBuildWithContext(ctx context.Context) (*Build, error) {
-	dlURL, err := url.Parse(baseBuildURL)
+	endpoint, err := url.Parse(baseBuildURL)
 	if err != nil {
 		return nil, err
 	}
 
-	query := dlURL.Query()
+	query := endpoint.Query()
 	query.Set("mode", "json")
-	dlURL.RawQuery = query.Encode()
+	endpoint.RawQuery = query.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, dlURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +55,8 @@ func GetBuildWithContext(ctx context.Context) (*Build, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode/100 != 2 {
 		return nil, fmt.Errorf("invalid response, status code: %d", resp.StatusCode)
